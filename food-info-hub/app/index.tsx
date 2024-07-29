@@ -1,15 +1,50 @@
-import { Text, View } from "react-native";
+import { useState } from "react";
+import { Alert, Button, Text, TextInput, View } from "react-native";
+import { fetchProductData } from "./api/apiService";
 
 export default function Index() {
+  const [productData, setProductData] = useState(null);
+  const [barcode, setBarcode] = useState("");
+
+  const handleFetchProductData = async () => {
+    if (!barcode.trim()) {
+      Alert.alert("Erreur", "Veuillez entrer un code-barres.");
+      return;
+    }
+    const data = await fetchProductData(barcode);
+    setProductData(data);
+    console.log(data);
+  };
+
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
+    <View>
+      <Text>Page d'accueil</Text>
+      <TextInput
+        placeholder="Entrez le code-barres"
+        value={barcode}
+        onChangeText={setBarcode}
+        style={{
+          height: 40,
+          borderColor: "gray",
+          borderWidth: 1,
+          marginBottom: 10,
+        }}
+      />
+      <Button title="Rechercher" onPress={handleFetchProductData} />
+
+      {productData && (
+        <View>
+          <Text>Nom du produit: {productData.product.product_name}</Text>
+          <Text>Marque: {productData.product.brands}</Text>
+          <Text>Catégories: {productData.product.categories}</Text>
+          <Text>Ingrédients: {productData.product.ingredients_text_fr}</Text>
+          <Text>
+            Conditions de conservation:{" "}
+            {productData.product.conservation_conditions_fr}
+          </Text>
+          <Text>Service client: {productData.product.customer_service_fr}</Text>
+        </View>
+      )}
     </View>
   );
 }
