@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Alert, Button, Platform, Text, TextInput, View } from "react-native";
+import { Alert, Button, Platform, Text, TextInput, View, Image } from "react-native";
 import { fetchProductData } from "./api/apiService";
 
 // Composant -------------------------------------------------------------------------------------
@@ -46,8 +46,8 @@ export default function Index() {
         <View>
           {/* Affiche nom, image, marque, catégories */}
           <Text>Nom du produit: {productData.product.product_name}</Text>
-          <img
-            src={productData.product.image_front_url}
+          <Image
+            source={{ uri: productData.product.image_front_url }}
             style={{ width: 200, height: 200 }}
           />
           <Text>Marque: {productData.product.brands}</Text>
