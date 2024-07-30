@@ -1,10 +1,11 @@
+import { StatusBar } from 'expo-status-bar';
 import { useState } from "react";
 import { Alert, Button, Platform, Text, TextInput, View, Image, StyleSheet } from "react-native";
 import { fetchProductData } from "./api/apiService";
 
 // Composant -------------------------------------------------------------------------------------
 export default function SearchScreen() {
-  const [productData, setProductData] = useState(null);
+  const [productData, setProductData] = useState<{ product: { product_name: string, image_front_url: string, brands: string, categories: string, ingredients_text_fr: string, conservation_conditions_fr: string, customer_service_fr: string } } | null>(null);
   const [barcode, setBarcode] = useState("");
 
   const handleFetchProductData = async () => {
@@ -24,6 +25,7 @@ export default function SearchScreen() {
   return (
     <View>
       <Text>Page d'accueil</Text>
+      <StatusBar style="auto" />
 
       {/* Champ de saisie pour le code-barres */}
       <TextInput
@@ -51,7 +53,7 @@ export default function SearchScreen() {
             style={{ width: 200, height: 200 }}
           />
           <Text>Marque: {productData.product.brands}</Text>
-          <Text>Catégories: {productData.product.categories}</Text>
+          <Text>Catégories: {productData?.product?.categories}</Text>
 
           {/* TODO: Ajouter affichage du Nutri-Score */}
           {/* TODO: Ajouter affichage du Eco-Score */}
