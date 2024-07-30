@@ -16,10 +16,3 @@ export async function fetchProductData(barcode) {
   const data = await response.json();
   return data;
 }
-
-// Exemple d'utilisation
-//fetchProductData("737628064502")
-//  .then((data) => console.log(data))
-//  .catch((error) => console.error("Error:", error));
-
-//---------------------------------------- [ Tous les produits ] ----------------------------------------//
