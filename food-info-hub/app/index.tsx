@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Alert, Button, Text, TextInput, View } from "react-native";
+import { Alert, Button, Platform, Text, TextInput, View } from "react-native";
 import { fetchProductData } from "./api/apiService";
 
 export default function Index() {
@@ -8,7 +8,11 @@ export default function Index() {
 
   const handleFetchProductData = async () => {
     if (!barcode.trim()) {
-      Alert.alert("Erreur", "Veuillez entrer un code-barres.");
+      if (Platform.OS === "web") {
+        alert("Veuillez entrer un code-barres.");
+      } else {
+        Alert.alert("Erreur", "Veuillez entrer un code-barres.");
+      }
       return;
     }
     const data = await fetchProductData(barcode);
@@ -35,6 +39,10 @@ export default function Index() {
       {productData && (
         <View>
           <Text>Nom du produit: {productData.product.product_name}</Text>
+          <img
+            src={productData.product.image_front_url}
+            style={{ width: 200, height: 200 }}
+          />
           <Text>Marque: {productData.product.brands}</Text>
           <Text>Catégories: {productData.product.categories}</Text>
           <Text>Ingrédients: {productData.product.ingredients_text_fr}</Text>
