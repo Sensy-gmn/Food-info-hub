@@ -1,11 +1,30 @@
-import { StatusBar } from 'expo-status-bar';
+import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-import { Alert, Button, Platform, Text, TextInput, View, Image, StyleSheet } from "react-native";
-import { fetchProductData } from "./api/apiService";
+import {
+  Alert,
+  Button,
+  Image,
+  Platform,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { fetchAllProducts, fetchProductData } from "./api/apiService";
 
 // Composant -------------------------------------------------------------------------------------
 export default function SearchScreen() {
-  const [productData, setProductData] = useState<{ product: { product_name: string, image_front_url: string, brands: string, categories: string, ingredients_text_fr: string, conservation_conditions_fr: string, customer_service_fr: string } } | null>(null);
+  const [productData, setProductData] = useState<{
+    product: {
+      product_name: string;
+      image_front_url: string;
+      quantity: string;
+      brands: string;
+      categories: string;
+      ingredients_text_fr: string;
+      conservation_conditions_fr: string;
+      customer_service_fr: string;
+    };
+  } | null>(null);
   const [barcode, setBarcode] = useState("");
 
   const handleFetchProductData = async () => {
@@ -21,6 +40,7 @@ export default function SearchScreen() {
     setProductData(data);
     console.log(data);
   };
+
 
   return (
     <View>
@@ -53,11 +73,17 @@ export default function SearchScreen() {
             style={{ width: 200, height: 200 }}
           />
           <Text>Marque: {productData.product.brands}</Text>
-          <Text>Catégories: {productData?.product?.categories}</Text>
+          <Text>Quantité: {productData.product.quantity}</Text>
 
-          {/* TODO: Ajouter affichage du Nutri-Score */}
-          {/* TODO: Ajouter affichage du Eco-Score */}
-          {/* TODO: Ajouter affichage du Carbon-Score */}
+          <div>
+            <Text>L'oeil de l'observateur</Text>
+            {/* TODO: Ajouter affichage du Nutri-Score */}
+
+            {/* TODO: Ajouter affichage du Eco-Score */}
+            {/* TODO: Ajouter affichage du Carbon-Score */}
+          </div>
+
+          <Text>Catégories: {productData?.product?.categories}</Text>
 
           {/* Affiche ingrédients, conditions de conservation */}
           <Text>Ingrédients: {productData.product.ingredients_text_fr}</Text>
