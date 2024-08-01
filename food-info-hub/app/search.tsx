@@ -9,25 +9,30 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { fetchProductData } from "./api/apiService";
+import {
+  fetchProductDataByBarcode,
+  fetchProductDataByKeyword,
+} from "./api/apiService";
 
 // Composant -------------------------------------------------------------------------------------
 export default function SearchScreen() {
   const [productData, setProductData] = useState<{
     product: {
-      product_name: string;
-      image_front_url: string;
-      quantity: string;
-      brands: string;
-      categories: string;
-      ingredients_text_fr: string;
-      conservation_conditions_fr: string;
-      customer_service_fr: string;
+      product_name?: string;
+      image_front_url?: string;
+      quantity?: string;
+      brands?: string;
+      categories?: string;
+      ingredients_text_fr?: string;
+      conservation_conditions_fr?: string;
+      customer_service_fr?: string;
     };
   } | null>(null);
-  const [barcode, setBarcode] = useState("");
 
-  const handleFetchProductData = async () => {
+  const [barcode, setBarcode] = useState("");
+  const [keyword, setKeyword] = useState("");
+
+  const handleFetchProductDataByBarcode = async () => {
     if (!barcode.trim()) {
       if (Platform.OS === "web") {
         alert("Veuillez entrer un code-barres.");
@@ -36,9 +41,51 @@ export default function SearchScreen() {
       }
       return;
     }
-    const data = await fetchProductData(barcode);
-    setProductData(data);
-    console.log(data);
+    try {
+      const dataByBarcode = await fetchProductDataByBarcode(barcode);
+      setProductData(dataByBarcode);
+      console.log(dataByBarcode);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des données:", error);
+      if (Platform.OS === "web") {
+        alert(
+          "Erreur lors de la récupération des données. Veuillez réessayer."
+        );
+      } else {
+        Alert.alert(
+          "Erreur",
+          "Erreur lors de la récupération des données. Veuillez réessayer."
+        );
+      }
+    }
+  };
+
+  const handleFetchProductDataByKeyword = async () => {
+    if (!keyword.trim()) {
+      if (Platform.OS === "web") {
+        alert("Veuillez entrer un mot-clé.");
+      } else {
+        Alert.alert("Erreur", "Veuillez entrer un mot-clé.");
+      }
+      return;
+    }
+    try {
+      const dataByKeyword = await fetchProductDataByKeyword(keyword);
+      setProductData(dataByKeyword);
+      console.log(dataByKeyword);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des données:", error);
+      if (Platform.OS === "web") {
+        alert(
+          "Erreur lors de la récupération des données. Veuillez réessayer."
+        );
+      } else {
+        Alert.alert(
+          "Erreur",
+          "Erreur lors de la récupération des données. Veuillez réessayer."
+        );
+      }
+    }
   };
 
   return (
@@ -46,9 +93,18 @@ export default function SearchScreen() {
       <Text>Page d'accueil</Text>
       <StatusBar style="auto" />
 
-      {/* Champ de saisie pour le code-barres */}
+      {/* ---------------- */}
+
+      {/* Champ de scan photo pour le code-barres */}
+
+      {/* OU */}
+
+      {/* Champ de saisie pour le mot clé */}
+
+      {/* ---------------- */}
+
       <TextInput
-        placeholder="Entrez le code-barres"
+        placeholder="Scanner le code-barres"
         value={barcode}
         onChangeText={setBarcode}
         style={{
@@ -59,10 +115,28 @@ export default function SearchScreen() {
         }}
       />
 
-      {/* Bouton pour lancement recherche */}
-      <Button title="Rechercher" onPress={handleFetchProductData} />
+      <TextInput
+        placeholder="Entrez un mot-clé"
+        value={keyword}
+        onChangeText={setKeyword}
+        style={{
+          height: 40,
+          borderColor: "gray",
+          borderWidth: 1,
+          marginBottom: 10,
+        }}
+      />
 
-      {/* Affichage des informations du produit (si disponibles -> TODO : gestion aucune info sur produit) */}
+      <Button
+        title="Rechercher avec mon code-barres"
+        onPress={handleFetchProductDataByBarcode}
+      />
+      <Button
+        title="Rechercher par mot-clé"
+        onPress={handleFetchProductDataByKeyword}
+      />
+
+      {/* Affichage infos produit (si indisponibles -> TODO : gestion aucune info sur produit) */}
       {productData && (
         <View>
           {/* Affiche nom, image, marque, catégories */}
