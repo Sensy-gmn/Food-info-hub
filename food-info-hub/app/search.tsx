@@ -9,7 +9,7 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { fetchAllProducts, fetchProductData } from "./api/apiService";
+import { fetchProductData } from "./api/apiService";
 
 // Composant -------------------------------------------------------------------------------------
 export default function SearchScreen() {
@@ -40,7 +40,6 @@ export default function SearchScreen() {
     setProductData(data);
     console.log(data);
   };
-
 
   return (
     <View>
