@@ -8,6 +8,7 @@ export default function HomeScreen() {
       <Link href="/details">Details</Link>
       <Link href="/search">Search</Link>
       <Link href="/adminUsers">Admin - Users</Link>
+      <Link href="/adminProducts">Admin - Products</Link>
     </View>
   );
 }
