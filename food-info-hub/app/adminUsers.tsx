@@ -216,10 +216,10 @@ export default function AdminScreen() {
             <Text style={styles.userText}>Email: {item.email || "erreur"}</Text>
             <Text style={styles.userText}>Role: {item.role || "erreur"}</Text>
             <Text style={styles.userText}>
-              Created At: {item.createdAt || "erreur"}
+              Created At: {item.created_at || "erreur"}
             </Text>
             <Text style={styles.userText}>
-              Updated At: {item.updatedAt || "erreur"}
+              Updated At: {item.updated_at || "erreur"}
             </Text>
 
             <Button

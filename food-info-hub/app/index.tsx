@@ -5,9 +5,9 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Text>Home</Text>
-      <Link href="/details">Details </Link>
-      <Link href="/search">Search </Link>
-      <Link href="/admin">Admin </Link>
+      <Link href="/details">Details</Link>
+      <Link href="/search">Search</Link>
+      <Link href="/adminUsers">Admin - Users</Link>
     </View>
   );
 }
