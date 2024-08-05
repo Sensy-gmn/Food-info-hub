@@ -1,37 +1,70 @@
 import { useState } from "react";
-import { Button, FlatList, Text, TextInput, View } from "react-native";
+import {
+  Button,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 // Composant -------------------------------------------------------------------------------------
 export default function AdminScreen() {
   const urlBase = "http://localhost:5001/api/";
 
-  const [users, setUsers] = useState([]);
+  interface User {
+    id: number;
+    username: string;
+    firstname: string;
+    lastname: string;
+    email: string;
+    role: string;
+    password: string;
+  }
+
+  const [users, setUsers] = useState<User[]>([]);
+
   const [newUser, setNewUser] = useState({
+    id: null,
     username: "",
+    firstname: "",
+    lastname: "",
     email: "",
     role: "",
+    password: "",
   });
-  const [editingUser, setEditingUser] = useState(null);
 
-  // Création d'un utilisateur
+  const [editingUser, setEditingUser] = useState<typeof newUser | null>(null);
+
+  // Création d'un utilisateur -----------------------------------
   const createUser = async () => {
     try {
+      const { id, ...userWithoutId } = newUser;
       const response = await fetch(urlBase + "users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newUser),
+        body: JSON.stringify(userWithoutId),
       });
       const textData = await response.text();
       const data = JSON.parse(textData);
       setUsers(data);
+      setNewUser({
+        id: null,
+        username: "",
+        firstname: "",
+        lastname: "",
+        email: "",
+        role: "",
+        password: "",
+      });
     } catch (error) {
       console.error("Error creating user:", error);
     }
   };
 
-  // Récupération de tous les utilisateurs
+  // Récupération de tous les utilisateurs -----------------------------------
   const fetchUsers = async () => {
     try {
       const response = await fetch(urlBase + "users");
@@ -43,7 +76,7 @@ export default function AdminScreen() {
     }
   };
 
-  // Modification d'un utilisateur
+  // Modification d'un utilisateur -----------------------------------
   const updateUser = async (id: number) => {
     try {
       const response = await fetch(urlBase + "users/" + id, {
@@ -62,7 +95,7 @@ export default function AdminScreen() {
     }
   };
 
-  // Suppression d'un utilisateur
+  // Suppression d'un utilisateur -----------------------------------
   const deleteUser = async (id: number) => {
     try {
       const response = await fetch(urlBase + "users/" + id, {
@@ -77,30 +110,25 @@ export default function AdminScreen() {
   };
 
   return (
-    <View>
-      <Text>
-        <h1>Page d'administration</h1>
-      </Text>
+    <View style={styles.container}>
+      <Text style={styles.header}>Page d'administration</Text>
 
       {/* Formulaire de création d'utilisateur */}
-      <div
-        style={{
-          backgroundColor: "lightblue",
-          display: "flex",
-          flexDirection: "column",
-          gap: 10,
-          marginBottom: 60,
-          marginTop: 60,
-          borderWidth: 1,
-          borderColor: "black",
-          borderRadius: 10,
-          padding: 10,
-        }}
-      >
+      <View style={styles.form}>
         <TextInput
           placeholder="Username"
           value={newUser.username}
           onChangeText={(text) => setNewUser({ ...newUser, username: text })}
+        />
+        <TextInput
+          placeholder="Firstname"
+          value={newUser.firstname}
+          onChangeText={(text) => setNewUser({ ...newUser, firstname: text })}
+        />
+        <TextInput
+          placeholder="Lastname"
+          value={newUser.lastname}
+          onChangeText={(text) => setNewUser({ ...newUser, lastname: text })}
         />
         <TextInput
           placeholder="Email"
@@ -119,30 +147,31 @@ export default function AdminScreen() {
         />
 
         <Button title="Créer un utilisateur" onPress={createUser} />
-      </div>
+      </View>
 
       <Button title="Afficher tous les utilisateurs" onPress={fetchUsers} />
 
       {editingUser && (
-        <View
-          style={{
-            backgroundColor: "lightgreen",
-            display: "flex",
-            flexDirection: "column",
-            gap: 10,
-            marginBottom: 60,
-            marginTop: 60,
-            borderWidth: 1,
-            borderColor: "black",
-            borderRadius: 10,
-            padding: 10,
-          }}
-        >
+        <View style={styles.editForm}>
           <TextInput
             placeholder="Username"
             value={editingUser.username}
             onChangeText={(text) =>
               setEditingUser({ ...editingUser, username: text })
+            }
+          />
+          <TextInput
+            placeholder="Firstname"
+            value={editingUser.firstname}
+            onChangeText={(text) =>
+              setEditingUser({ ...editingUser, firstname: text })
+            }
+          />
+          <TextInput
+            placeholder="Lastname"
+            value={editingUser.lastname}
+            onChangeText={(text) =>
+              setEditingUser({ ...editingUser, lastname: text })
             }
           />
           <TextInput
@@ -162,7 +191,7 @@ export default function AdminScreen() {
 
           <Button
             title="Mettre à jour l'utilisateur"
-            onPress={() => updateUser(editingUser.id)}
+            onPress={() => editingUser && updateUser(editingUser.id)}
           />
         </View>
       )}
@@ -173,27 +202,23 @@ export default function AdminScreen() {
           item.id ? item.id.toString() : Math.random().toString()
         }
         renderItem={({ item }) => (
-          <View
-            style={{
-              margin: 10,
-              padding: 10,
-              borderWidth: 1,
-              borderColor: "black",
-              backgroundColor: "#f0f500",
-            }}
-          >
-            <Text style={{ fontSize: 20 }}>ID: {item.id || "erreur"}</Text>
-            <Text style={{ fontSize: 20 }}>
+          <View style={styles.userCard}>
+            <Text style={styles.userText}>ID: {item.id || "erreur"}</Text>
+            <Text style={styles.userText}>
               Username: {item.username || "erreur"}
             </Text>
-            <Text style={{ fontSize: 20 }}>
-              Email: {item.email || "erreur"}
+            <Text style={styles.userText}>
+              Firstname: {item.firstname || "erreur"}
             </Text>
-            <Text style={{ fontSize: 20 }}>Role: {item.role || "erreur"}</Text>
-            <Text style={{ fontSize: 20 }}>
+            <Text style={styles.userText}>
+              Lastname: {item.lastname || "erreur"}
+            </Text>
+            <Text style={styles.userText}>Email: {item.email || "erreur"}</Text>
+            <Text style={styles.userText}>Role: {item.role || "erreur"}</Text>
+            <Text style={styles.userText}>
               Created At: {item.createdAt || "erreur"}
             </Text>
-            <Text style={{ fontSize: 20 }}>
+            <Text style={styles.userText}>
               Updated At: {item.updatedAt || "erreur"}
             </Text>
 
@@ -211,3 +236,48 @@ export default function AdminScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  form: {
+    backgroundColor: "lightblue",
+    display: "flex",
+    flexDirection: "column",
+    gap: 10,
+    marginBottom: 60,
+    marginTop: 60,
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 10,
+    padding: 10,
+  },
+  editForm: {
+    backgroundColor: "lightgreen",
+    display: "flex",
+    flexDirection: "column",
+    gap: 10,
+    marginBottom: 60,
+    marginTop: 60,
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 10,
+    padding: 10,
+  },
+  userCard: {
+    margin: 10,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "black",
+    backgroundColor: "#f0f500",
+  },
+  userText: {
+    fontSize: 20,
+  },
+});

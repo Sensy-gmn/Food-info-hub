@@ -11,32 +11,41 @@ function serialize(obj) {
 
 // Création d'un utilisateur ------------------------------------------ POST
 exports.createUser = async (req, res) => {
-  const { username, email, password, role } = req.body;
+  const { username, firstname, lastname, email, password, role } = req.body;
 
-  if (!username || !email || !password || !role) {
-    return res
-      .status(400)
-      .json({ error: "Username, email, password and role are required" });
+  if (!username || !firstname || !lastname || !email || !password || !role) {
+    return res.status(400).json({
+      error:
+        "Username, firstname, lastname, email, password and role are required",
+    });
   }
 
+  let conn;
   try {
+    conn = await pool.getConnection();
     const hashedPassword = await bcrypt.hash(password, 10);
-    const conn = await pool.getConnection();
     const result = await conn.query(
-      "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)",
-      [username, email, hashedPassword, role]
+      "INSERT INTO users (username, firstname, lastname, email, password, role) VALUES (?, ?, ?, ?, ?, ?)",
+      [username, firstname, lastname, email, hashedPassword, role]
     );
-    conn.release();
     const created_at = new Date();
-    res
-      .status(201)
-      .json(
-        JSON.parse(
-          serialize({ id: result.insertId, username, email, role, created_at })
-        )
-      );
+    res.status(201).json(
+      JSON.parse(
+        serialize({
+          id: result.insertId,
+          username,
+          firstname,
+          lastname,
+          email,
+          role,
+          created_at,
+        })
+      )
+    );
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: `Error creating user: ${err.message}` });
+  } finally {
+    if (conn) conn.release();
   }
 };
 
@@ -44,9 +53,7 @@ exports.createUser = async (req, res) => {
 exports.getUsers = async (req, res) => {
   try {
     const conn = await pool.getConnection();
-    const rows = await conn.query(
-      "SELECT id, username, email, role, created_at, updated_at FROM users"
-    );
+    const rows = await conn.query("SELECT * FROM users");
     conn.release();
     res.status(200).json(JSON.parse(serialize(rows)));
   } catch (err) {
@@ -57,18 +64,18 @@ exports.getUsers = async (req, res) => {
 // Modification d'un utilisateur ------------------------------------------ PUT
 exports.updateUser = async (req, res) => {
   const { id } = req.params;
-  const { username, email, role } = req.body;
+  const { username, firstname, lastname, email, role } = req.body;
 
-  if (!username || !email || !role) {
-    return res
-      .status(400)
-      .json({ error: "Username, email and role are required" });
+  if (!username || !firstname || !lastname || !email || !role) {
+    return res.status(400).json({
+      error: "Username, firstname, lastname, email and role are required",
+    });
   }
 
   try {
     const conn = await pool.getConnection();
     const result = await conn.query("UPDATE users SET ? WHERE id = ?", [
-      { username, email, role },
+      { username, firstname, lastname, email, role },
       id,
     ]);
     conn.release();
@@ -90,3 +97,4 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
