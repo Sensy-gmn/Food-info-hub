@@ -48,13 +48,7 @@ export default function AdminProducts() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          barcode: "1234567890",
-          name: "Test",
-          description: "Test",
-          category_ID: 1,
-          user_ID: 1,
-        }),
+        body: JSON.stringify(newProduct),
       });
       const textData = await response.text();
       const data = JSON.parse(textData);
@@ -120,10 +114,20 @@ export default function AdminProducts() {
           data={products}
           renderItem={({ item }) => (
             <View key={item.id} style={styles.userCard}>
-              <Text style={styles.userText}>{item.name}</Text>
-              <Text style={styles.userText}>{item.description}</Text>
-              <Text style={styles.userText}>{item.category_ID}</Text>
-              <Text style={styles.userText}>{item.user_ID}</Text>
+              <Text style={styles.userText}>nom : {item.name}</Text>
+              <Text style={styles.userText}>
+                description : {item.description}
+              </Text>
+              <Text style={styles.userText}>
+                category_ID : {item.category_ID}
+              </Text>
+              <Text style={styles.userText}>user_ID : {item.user_ID}</Text>
+              <Text style={styles.userText}>
+                created_at : {item.created_at}
+              </Text>
+              <Text style={styles.userText}>
+                updated_at : {item.updated_at}
+              </Text>
             </View>
           )}
         />

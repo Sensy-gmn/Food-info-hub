@@ -26,8 +26,13 @@ exports.getCategory = async (req, res) => {
     const conn = await pool.getConnection();
     const rows = await conn.query("SELECT * FROM category");
     conn.release();
+
+    // Log the rows to verify the content
+    console.log("Fetched categories:", rows);
+
     res.status(200).json(rows);
   } catch (err) {
+    console.error("Error fetching categories:", err.message);
     res.status(500).json({ error: err.message });
   }
 };
@@ -64,6 +69,19 @@ exports.updateCategory = async (req, res) => {
       id,
       name,
     });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Suppression d'une catégorie ------------------------------------------ DELETE
+exports.deleteCategory = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const conn = await pool.getConnection();
+    await conn.query("DELETE FROM category WHERE id = ?", [id]);
+    conn.release();
+    res.status(200).json({ message: "Category deleted" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -16,6 +16,7 @@ export default function RootLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="search" />
       <Stack.Screen name="adminUsers" />
+      <Stack.Screen name="adminCategory" />
     </Stack>
   );
 }

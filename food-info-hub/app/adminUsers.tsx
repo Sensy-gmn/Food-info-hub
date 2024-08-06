@@ -23,7 +23,6 @@ export default function AdminScreen() {
   }
 
   const [users, setUsers] = useState<User[]>([]);
-
   const [newUser, setNewUser] = useState({
     id: null,
     username: "",
